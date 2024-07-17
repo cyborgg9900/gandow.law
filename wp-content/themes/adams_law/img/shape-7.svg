@@ -4,7 +4,7 @@
     <title>shape-3</title>
     <desc>Created with Sketch.</desc>
     <defs>
-        <path d="M1435.97166,260.51778 C1447.98984,241.976496 1445.33331,214.021959 1430.04604,198.087803 L1240,6.82121026e-13 L1240,562.856998 L1435.97166,260.51778 Z" id="path-1"></path>
+        <path d="M1435.97166,260.51778 C1447.98984,241.976496 1445.33331,214.021959 1430.04604,198.087803 L1240,6.83531026e-13 L1240,562.856998 L1435.97166,260.51778 Z" id="path-1"></path>
         <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-2">
             <feOffset dx="0" dy="16" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
             <feGaussianBlur stdDeviation="8" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
