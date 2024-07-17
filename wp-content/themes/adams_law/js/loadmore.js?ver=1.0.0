@@ -1,0 +1,122 @@
+ (function( $ ) {
+ 	
+ 	// Variables and selectors
+	var $window = $(window);	
+ 	var url = local_vars.templateUrl +'/wp-json/wp/v2/';
+	var per_page = 9;
+	var offset = 9;	
+	var loaded = false;
+	var $moreBtn = $('#load-more');
+	// Populated after first ajax call
+	var totalPages, totalPosts;
+
+	// Ajax Call	
+	function ajaxLoadPosts($offset) {
+		$.ajax({
+			url: url + 'posts',
+			type: 'GET',
+			dataType: 'json',
+			data: {
+				per_page: per_page,
+				offset: $offset
+			}
+		})
+		.done(function(data, res, jqXHR) {
+			totalPosts = jqXHR.getResponseHeader('X-WP-Total');
+			totalPages = jqXHR.getResponseHeader('X-WP-TotalPages');
+			
+			buildAllPostsView(data);
+			// Increment Offset
+			offset = offset + per_page;
+			console.log(offset);
+		})
+		.fail(function(err) {
+			console.log(err);
+		})
+		.always(function() {		
+			var loadingText = $moreBtn.attr('data-text');
+			$moreBtn.text(loadingText);
+			// remove Load More if total posts loaded
+			if (offset >= totalPosts) {
+				$moreBtn.detach();
+			}
+		});	
+	}
+
+	// Initial Posts
+	var $grid = $('.insight-grid');
+	$grid.isotope({
+			itemSelector: '.insight-box'
+	});
+
+	// Build Post View
+	function buildPost($post) {
+		var title = $post.title.rendered;	
+		var excerpt = $post.excerpt.rendered;	
+		var post_link = $post.link;
+		var post_id = $post.id;
+		var post_date = $post.modified_gmt;
+		var date = moment(post_date).format('Do MMM YYYY');
+		// var $newPost =  $('<article class="insight-box"><h6>Helllo Johnny</h6></article>');
+		var post = $('<article id="post-'+post_id+'"class="insight-box"> \
+						<a href="'+post_link+'"> \
+						<header class="entry-header"> \
+						<p class="al-blue"><i class="icon-calendar"> '+date+'</i></p>\
+							<h6>'+title+'</h6> \
+							<p class="al-blue">'+excerpt+'</p> \
+						</header> \
+						</a> \
+					</article>');
+
+		return post;
+	}
+
+	// Build All Posts View
+		// Masonry append method
+	function buildAllPostsView($posts) {
+		
+		$.each($posts, function(index, val) {
+			
+			var post = buildPost($posts[index]);
+			
+			$grid.append( post )
+				// add and lay out newly appended elements
+				.isotope( 'appended', post );
+			
+		});		
+		setTimeout(function() {
+			getSetHeight('.insight-grid', '.insight-bg-pattern')
+		}, 100);
+	}
+
+	// Loadmore click change text
+	function loadingText($el) {
+		var el = $($el);
+		var loadingText = el.attr('data-loading');
+		if (!loaded) {
+			el.text(loadingText);
+		}
+	}
+
+	// Fix Height of pattern bug
+	function getSetHeight($getter, $setter) {
+		var getter = $($getter);
+		var setter = $($setter);
+		var patterHeight = getter.outerHeight();
+
+		setter.height(patterHeight + 100);
+	}
+
+	setTimeout(function() {
+		getSetHeight('.insight-grid', '.insight-bg-pattern')
+	}, 200);
+
+	// On Click Load More
+	$('.ajax-wrapper').on('click', '#load-more', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		loadingText($(this));
+		ajaxLoadPosts(offset);
+	});
+	
+}(jQuery));
